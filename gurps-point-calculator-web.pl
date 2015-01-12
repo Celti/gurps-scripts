@@ -3,16 +3,6 @@
 # Intended to read character sheets from dokuwiki pages and provide output to be displayed via AJAX.
 # (c) 2007-2014 Patrick Burroughs (Celti) <celticmadman@gmail.com>
 
-## Testing:
-# Wealth (Filthy Rich) [50]
-# Greed (12) [-15]
-# Template: Immortal [5]
-#    Unaging <5>
-# 
-# $2, $400, $60K, $800M
-# 10.5 lbs., 8 oz.
-# {10} |2| {20} |11|
-
 use common::sense;
 
 my $data_dir = '/home/public/wiki/data/pages/';
