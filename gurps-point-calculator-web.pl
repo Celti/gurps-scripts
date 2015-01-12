@@ -25,8 +25,9 @@ my (@money, @weight);
 sub sum {
 	my $s = 0;
 	($s+=$_) for @_;
-	$s =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
-	return $s;
+	my ($i, $f) = split(/(?=\.)/, $s);
+	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
+	return $i . $f;
 }
 
 die "Attempt to access files outside of data directory!" if $page_name =~ /\.\.\//;

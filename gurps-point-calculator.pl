@@ -9,7 +9,7 @@
 #    Unaging <5>
 # 
 # $2, $400, $60K, $800M
-# 10.5 lbs., 8 oz.
+# 10.5 lbs., 19 oz.
 # {10} |2| {20} |11|
 
 use common::sense;
@@ -21,8 +21,9 @@ my (@money, @weight);
 sub sum {
 	my $s = 0;
 	($s+=$_) for @_;
-	$s =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
-	return $s;
+	my ($i, $f) = split(/(?=\.)/, $s);
+	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
+	return $i . $f;
 }
 
 while (<>) {
