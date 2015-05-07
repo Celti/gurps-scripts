@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # GURPS Point Calculator (Web Edition)
 # Intended to read character sheets from dokuwiki pages and provide output to be displayed via AJAX.
-# (c) 2007-2014 Patrick Burroughs (Celti) <celticmadman@gmail.com>
+# (c) 2007-2015 Patrick Burroughs (Celti) <celti@celti.name>
 
 use common::sense;
 
@@ -49,7 +49,14 @@ while (<$sheet>) {
 		{ s/,//g; push @weight, $_/16; }
 }
 
+# Old style.
+#print "Content-type: text/html\n\n";
+#printf "%s points (%s disadvantages)<br/>\n", sum(@points), sum(@disads);
+#printf "Equipment: \$%s, %s lbs.<br/>\n", sum(@money), sum(@weight);
+#printf "Other sums: &lt;%s&gt; {%s} |%s|<br/>\n", sum(@angle), sum(@curly), sum(@pipe);
+
+# New style.
 print "Content-type: text/html\n\n";
 printf "%s points (%s disadvantages)<br/>\n", sum(@points), sum(@disads);
-printf "Equipment: \$%s, %s lbs.<br/>\n", sum(@money), sum(@weight);
-printf "Other sums: &lt;%s&gt; {%s} |%s|<br/>\n", sum(@angle), sum(@curly), sum(@pipe);
+printf "\$%s, %s lbs.<br/>\n", sum(@money), sum(@weight);
+printf "<p>[%s]</p> <p>&lt;%s&gt;</p> <p>{%s}</p> <p>|%s|</p>", sum(@points), sum(@angle), sum(@curly), sum(@pipe);
