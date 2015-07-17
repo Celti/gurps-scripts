@@ -9,7 +9,7 @@
 #    Unaging <5>
 # 
 # $2, $400, $60K, $800M
-# 10.5 lbs., 19 oz.
+# 10.5 lbs., 19 oz., 2 kg., 400 g.
 # {10} |2| {20} |11|
 
 use common::sense;
@@ -50,8 +50,12 @@ while (<>) {
 		{ s/,//g; push @weight, $_; }
 	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*oz\./xig)
 		{ s/,//g; push @weight, $_/16; }
+	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*kg\./xig)
+		{ s/,//g; push @weight, $_*2.205; }
+	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*g\./xig)
+		{ s/,//g; push @weight, $_/453.593; }
 }
 
 printf "%s points (%s disadvantages)\n", sum(@points), sum(@disads);
-printf "Equipment: \$%s, %s lbs.\n", sum(@money), sum(@weight);
+printf "Equipment: \$%s, %s lbs. (%s kg.)\n", sum(@money), sum(@weight), sum(@weight)/2.205;
 printf "Other sums: <%s> {%s} |%s|\n", sum(@angle), sum(@curly), sum(@pipe);
