@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # GURPS Point Calculator
-# (c) 2007-2014 Patrick Burroughs (Celti) <celticmadman@gmail.com>
+# (c) 2007-2015 Patrick Burroughs (Celti) <celti@celti.name>
 
 ## Testing:
 # Wealth (Filthy Rich) [50]
