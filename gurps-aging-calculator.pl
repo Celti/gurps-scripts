@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # GURPS Aging Calculator
-# (c) 2007-2014 Patrick Burroughs (Celti) <celticmadman@gmail.com>
+# (c) 2007-2015 Patrick Burroughs (Celti) <celti@celti.name>
 
 use threads;
 use threads::shared;
@@ -32,7 +32,7 @@ sub usage() {
 	print <<EOH;
 Usage: $0 [OPTIONS]
   -?, --help            Display this help and exit.
-  -v, --log             Log verbose output to age-calc.log. (Default: off)
+  -v, --log[=?]         Log verbose output to stdout or specified file. (Default: off)
   -h, --ht=?            The character's starting HT. (Default: 10)
   -t, --tl=?            The character's medical TL. (Default: 8)
   -a, --add=?           Additional modifiers to the aging roll. (Default: 0)
@@ -57,15 +57,18 @@ usage() if ( ! GetOptions(
 	'x|lifespan=i' => \$lifespan,          # -x 0, --lifespan=0
 	'l|longevity' => \$longevity,          # -l, --longevity
 	's|self-destruct' => \$self_destruct,  # -s, --self-destruct
-	'v|log' => \$noisy,                    # -v, --log
+	'v|log:s' => \$noisy,                    # -v, --log
 	'help|?' => \$help                     # -?, --help
 ) or defined $help );
 
 # Results array, shared between threads.
 my @deaths :shared;
 
-# Open debug logfile.
-open my $log, '>', 'age-calc.log' or die "Couldn't open logfile!" if $noisy;
+# Open debug logfile (default to STDOUT).
+my $log = *STDOUT;
+if ($noisy and $noisy != 1) {
+	open $log, '>', $noisy or die "Couldn't open logfile!";
+}
 
 # Extended Lifespan increases the duration between rolls.
 my $mod = 2**$lifespan;
@@ -83,9 +86,8 @@ sub kill_them_all {
 		my $_HT = $HT; # Let's not modify the global HT.
 		my $age = 50*$mod; # You start dying at age fifty (or greater, with Extended Lifespan).
 		while ($_HT > $death) { # 'til death do we run.
-			say $log "Current HT is $_HT, effective HT is ".($_HT+$bonus).", current age is $age." if $noisy;
 			my $roll = Math::NumberCruncher::Dice(3,6); # Roll the bones!
-			say $log "Rolled a $roll." if $noisy;
+			say $log "Current HT is $_HT, effective HT is ".($_HT+$bonus).", current age is $age. Rolled a $roll." if $noisy;
 
 			if ($longevity) {
 				if ($_HT+$bonus > 16) {
@@ -107,8 +109,7 @@ sub kill_them_all {
 
 			if ($_HT <= $death) {
 				push @deaths, $age;
-				say $log "Dead at $age." if $noisy;
-				say $log "%" if $noisy;
+				say $log "Dead at $age.\n%" if $noisy;
 			} else {
 				if ($self_destruct) {
 					$age += $mod/365;
@@ -124,11 +125,10 @@ sub kill_them_all {
 	}
 }
 
-# Spawn threads.
-my @threads = map { threads->create(\&kill_them_all) } 1 .. $maxprocs;
-# Wait for results.
-$_->join for @threads;
+# Spawn and wait for threads.
+map { threads->create(\&kill_them_all)->join() } 1 .. $maxprocs;
 
+# Process and output statistics.
 my $mean = Math::NumberCruncher::Mean(\@deaths);
 my ($high, $low) = Math::NumberCruncher::Range(\@deaths);
 my $median = Math::NumberCruncher::Median(\@deaths);
