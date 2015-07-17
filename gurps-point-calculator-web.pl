@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 # GURPS Point Calculator (Web Edition)
 # Intended to read character sheets from dokuwiki pages and provide output to be displayed via AJAX.
+# Meant for use at https://celti.name/wiki/gaming/
 # (c) 2007-2015 Patrick Burroughs (Celti) <celti@celti.name>
 
 use common::sense;
@@ -47,16 +48,13 @@ while (<$sheet>) {
 		{ s/,//g; push @weight, $_; }
 	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*oz\./xig)
 		{ s/,//g; push @weight, $_/16; }
+	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*kg\./xig)
+		{ s/,//g; push @weight, $_*2.205; }
+	foreach (/((?:\d{1,3},)*\d*\.?\d+)\s*g\./xig)
+		{ s/,//g; push @weight, $_/453.593; }
 }
 
-# Old style.
-#print "Content-type: text/html\n\n";
-#printf "%s points (%s disadvantages)<br/>\n", sum(@points), sum(@disads);
-#printf "Equipment: \$%s, %s lbs.<br/>\n", sum(@money), sum(@weight);
-#printf "Other sums: &lt;%s&gt; {%s} |%s|<br/>\n", sum(@angle), sum(@curly), sum(@pipe);
-
-# New style.
 print "Content-type: text/html\n\n";
-printf "%s points (%s disadvantages)<br/>\n", sum(@points), sum(@disads);
-printf "\$%s, %s lbs.<br/>\n", sum(@money), sum(@weight);
-printf "<p>[%s]</p> <p>&lt;%s&gt;</p> <p>{%s}</p> <p>|%s|</p>", sum(@points), sum(@angle), sum(@curly), sum(@pipe);
+printf "%d points (%d disadvantages)<br/>", sum(@points), sum(@disads);
+printf "\$%.2f, %.2f lbs. (%.2f kg.)<br/>", sum(@money), sum(@weight), sum(@weight)/2.205;
+printf "<p>[%s]</p><p>&lt;%s&gt;</p><p>{%s}</p><p>|%s|</p>", sum(@points), sum(@angle), sum(@curly), sum(@pipe);
