@@ -56,6 +56,6 @@ while (<>) {
 		{ s/,//g; push @weight, $_/453.593; }
 }
 
-printf "%s points (%s disadvantages)\n", sum(@points), sum(@disads);
-printf "Equipment: \$%s, %s lbs. (%s kg.)\n", sum(@money), sum(@weight), sum(@weight)/2.205;
-printf "Other sums: <%s> {%s} |%s|\n", sum(@angle), sum(@curly), sum(@pipe);
+printf "%d points (%d disadvantages)\n", sum(@points), sum(@disads);
+printf "Equipment: \$%.2f, %.2f lbs. (%.2f kg.)\n", sum(@money), sum(@weight), sum(@weight)/2.205;
+printf "Other sums: <%d> {%d} |%d|\n", sum(@angle), sum(@curly), sum(@pipe);
