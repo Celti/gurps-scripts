@@ -16,9 +16,14 @@ my (@money, @weight);
 sub sum {
 	my $s = 0;
 	($s+=$_) for @_;
-	my ($i, $f) = split(/(?=\.)/, $s);
+	return $s;
+}
+
+sub commaify {
+	my $n = shift;
+	my ($i, $f) = split(/(?=\.)/, $n);
 	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
-	return $i . $f;
+	return $i.$f;
 }
 
 die "Attempt to access files outside of data directory!" if $page_name =~ /\.\.\//;
@@ -26,7 +31,8 @@ open my $sheet, "<", $data_dir.$page_name or die "Couldn't open character sheet.
 
 while (<$sheet>) {
 	s/½|1\/2/.5/g;
-	s/\+//g;
+	s/¼|1\/4/.25/g;
+	s/⅛|1\/8/.125/g;
 
 	foreach (/\[(-?\d*\.?\d+)\]/g) { push @points, $_; }
 	foreach (/\[(-\d*\.?\d+)\]/g)  { push @disads, $_; }
@@ -55,6 +61,6 @@ while (<$sheet>) {
 }
 
 print "Content-type: text/html\n\n";
-printf "%d points (%d disadvantages)<br/>", sum(@points), sum(@disads);
-printf "\$%.2f, %.2f lbs. (%.2f kg.)<br/>", sum(@money), sum(@weight), sum(@weight)/2.205;
-printf "<p>[%s]</p><p>&lt;%s&gt;</p><p>{%s}</p><p>|%s|</p>", sum(@points), sum(@angle), sum(@curly), sum(@pipe);
+printf "%s points (%s disadvantages)<br/>", commaify(sum(@points)), commaify(sum(@disads));
+printf "\$%s, %s lbs., (%s kg.)<br/>", commaify(sprintf('%.2f',sum(@money))), commaify(sprintf('%.2f',sum(@weight))), commaify(sprintf('%.3f',sum(@weight)/2.205));
+printf "<p>[%s]</p><p>&lt;%s&gt;</p><p>{%s}</p><p>|%s|</p>", commaify(sum(@points)), commaify(sum(@angle)), commaify(sum(@curly)), commaify(sum(@pipe));

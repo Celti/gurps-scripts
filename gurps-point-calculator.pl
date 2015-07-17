@@ -10,7 +10,7 @@
 # 
 # $2, $400, $60K, $800M
 # 10.5 lbs., 19 oz., 2 kg., 400 g.
-# {10} |2| {20} |11|
+# {10} |2| {20} |11| |0.5| |0.25| |0.125|
 
 use common::sense;
 
@@ -21,14 +21,20 @@ my (@money, @weight);
 sub sum {
 	my $s = 0;
 	($s+=$_) for @_;
-	my ($i, $f) = split(/(?=\.)/, $s);
+	return $s;
+}
+
+sub commaify {
+	my $n = shift;
+	my ($i, $f) = split(/(?=\.)/, $n);
 	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
-	return $i . $f;
+	return $i.$f;
 }
 
 while (<>) {
 	s/½|1\/2/.5/g;
-	s/\+//g;
+	s/¼|1\/4/.25/g;
+	s/⅛|1\/8/.125/g;
 
 	foreach (/\[(-?\d*\.?\d+)\]/g) { push @points, $_; }
 	foreach (/\[(-\d*\.?\d+)\]/g)  { push @disads, $_; }
@@ -56,6 +62,6 @@ while (<>) {
 		{ s/,//g; push @weight, $_/453.593; }
 }
 
-printf "%d points (%d disadvantages)\n", sum(@points), sum(@disads);
-printf "Equipment: \$%.2f, %.2f lbs. (%.2f kg.)\n", sum(@money), sum(@weight), sum(@weight)/2.205;
-printf "Other sums: <%d> {%d} |%d|\n", sum(@angle), sum(@curly), sum(@pipe);
+printf "%s points (%s disadvantages)\n", commaify(sum(@points)), commaify(sum(@disads));
+printf "Equipment: \$%s, %s lbs. (%s kg.)\n", commaify(sprintf('%.2f',sum(@money))), commaify(sprintf('%.2f',sum(@weight))), commaify(sprintf('%.3f',sum(@weight)/2.205));
+printf "Other sums: <%s> {%s} |%s|\n", commaify(sum(@angle)), commaify(sum(@curly)), commaify(sum(@pipe));
