@@ -13,16 +13,11 @@
 # {10} |2| {20} |11| |0.5| |0.25| |0.125|
 
 use common::sense;
+use List::Util qw(sum0);
 
 my (@points, @disads);
 my (@angle, @curly, @pipe);
 my (@money, @weight);
-
-sub sum {
-	my $s = 0;
-	($s+=$_) for @_;
-	return $s;
-}
 
 sub commaify {
 	my $n = shift;
@@ -62,6 +57,16 @@ while (<>) {
 		{ s/,//g; push @weight, $_/453.593; }
 }
 
-printf "%s points (%s disadvantages)\n", commaify(sum(@points)), commaify(sum(@disads));
-printf "Equipment: \$%s, %s lbs. (%s kg.)\n", commaify(sprintf('%.2f',sum(@money))), commaify(sprintf('%.2f',sum(@weight))), commaify(sprintf('%.3f',sum(@weight)/2.205));
-printf "Other sums: <%s> {%s} |%s|\n", commaify(sum(@angle)), commaify(sum(@curly)), commaify(sum(@pipe));
+my $points = commaify(sum0(@points));
+my $disads = commaify(sum0(@disads));
+my $angle  = commaify(sum0(@angle));
+my $curly  = commaify(sum0(@curly));
+my $pipe   = commaify(sum0(@pipe));
+
+my $money    = commaify(sprintf('%.2f',sum0(@money)));
+my $standard = commaify(sprintf('%.2f',sum0(@weight)));
+my $metric   = commaify(sprintf('%.3f',sum0(@weight)/2.205));
+
+printf "%s points (%s disadvantages)\n", $points, $disads;
+printf "Equipment: \$%s, %s lbs. (%s kg.)\n", $money, $standard, $metric;
+printf "Other sums: <%s> {%s} |%s|\n", $angle, $curly, $pipe;

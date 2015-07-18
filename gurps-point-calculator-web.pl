@@ -5,19 +5,17 @@
 # (c) 2007-2015 Patrick Burroughs (Celti) <celti@celti.name>
 
 use common::sense;
+use List::Util qw(sum0);
 
 my $data_dir = '/home/public/wiki/data/pages/';
 my $page_name = $ENV{'QUERY_STRING'};
 
+die "Attempt to access files outside of data directory!" if $page_name =~ /\.\.\//;
+open my $sheet, "<", $data_dir.$page_name or die "Couldn't open character sheet.";
+
 my (@points, @disads);
 my (@angle, @curly, @pipe);
 my (@money, @weight);
-
-sub sum {
-	my $s = 0;
-	($s+=$_) for @_;
-	return $s;
-}
 
 sub commaify {
 	my $n = shift;
@@ -25,9 +23,6 @@ sub commaify {
 	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
 	return $i.$f;
 }
-
-die "Attempt to access files outside of data directory!" if $page_name =~ /\.\.\//;
-open my $sheet, "<", $data_dir.$page_name or die "Couldn't open character sheet.";
 
 while (<$sheet>) {
 	s/½|1\/2/.5/g;
@@ -40,7 +35,7 @@ while (<$sheet>) {
 	foreach (/\<(-?\d*\.?\d+)\>/g) { push @angle, $_; }
 	foreach (/\{(-?\d*\.?\d+)\}/g) { push @curly, $_; }
 	foreach (/\|(-?\d*\.?\d+)\|/g) { push @pipe, $_; }
-	
+
 	foreach (/\$(-?(?:\d{1,3},)*\d*\.?\d+(?:K|M|B|T)?)/g) {
 		s/,//g;
 		$_ *= 1000 if s/K//;
@@ -60,7 +55,17 @@ while (<$sheet>) {
 		{ s/,//g; push @weight, $_/453.593; }
 }
 
+my $points = commaify(sum0(@points));
+my $disads = commaify(sum0(@disads));
+my $angle  = commaify(sum0(@angle));
+my $curly  = commaify(sum0(@curly));
+my $pipe   = commaify(sum0(@pipe));
+
+my $money    = commaify(sprintf('%.2f',sum0(@money)));
+my $standard = commaify(sprintf('%.2f',sum0(@weight)));
+my $metric   = commaify(sprintf('%.3f',sum0(@weight)/2.205));
+
 print "Content-type: text/html\n\n";
-printf "%s points (%s disadvantages)<br/>", commaify(sum(@points)), commaify(sum(@disads));
-printf "\$%s, %s lbs., (%s kg.)<br/>", commaify(sprintf('%.2f',sum(@money))), commaify(sprintf('%.2f',sum(@weight))), commaify(sprintf('%.3f',sum(@weight)/2.205));
-printf "<p>[%s]</p><p>&lt;%s&gt;</p><p>{%s}</p><p>|%s|</p>", commaify(sum(@points)), commaify(sum(@angle)), commaify(sum(@curly)), commaify(sum(@pipe));
+printf "%s points (%s disadvantages)<br/>", $points, $disads;
+printf "\$%s, %s lbs., (%s kg.)<br/>", $money, $standard, $metric;
+printf "<p>[%s]</p><p>&lt;%s&gt;</p><p>{%s}</p><p>|%s|</p>", $points, $angle, $curly, $pipe;
