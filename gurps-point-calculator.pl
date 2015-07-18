@@ -23,6 +23,7 @@ sub commaify {
 	my $n = shift;
 	my ($i, $f) = split(/(?=\.)/, $n);
 	$i =~ s/(?<=\d)(?=(?:\d\d\d)+(?!\d))/,/g;
+	$f =~ s/\.?0+$//;
 	return $i.$f;
 }
 
