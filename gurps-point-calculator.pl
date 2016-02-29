@@ -14,6 +14,7 @@
 
 use common::sense;
 use List::Util qw(sum0);
+use open qw(:std :utf8);
 
 my (@points, @disads);
 my (@angle, @curly, @pipe);

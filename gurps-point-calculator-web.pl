@@ -6,6 +6,7 @@
 
 use common::sense;
 use List::Util qw(sum0);
+use open qw(:std :utf8);
 
 my $data_dir = '/home/public/wiki/data/pages/';
 my $page_name = $ENV{'QUERY_STRING'};
